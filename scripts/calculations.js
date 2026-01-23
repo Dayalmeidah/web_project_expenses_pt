@@ -1,62 +1,55 @@
 // Variariaveis principais
 let budgetValue = 0;
 let totalExpensesValue = 0;
-let balanceColor = "green";  
+let balanceColor = "green";
 
 // Array para armazenar as entradas de despesas
 let expenseEntries = [
-["groceries", 33],
-["restaurants", 50],
-["transport", 12],
-["home", 70],
-["subscriptions", 14],
-["groceries", 28],
-["subscriptions", 12]
+    ["groceries", 33],
+    ["restaurants", 50],
+    ["transport", 12],
+    ["home", 70],
+    ["subscriptions", 14],
+    ["groceries", 28],
+    ["subscriptions", 12]
 ];
 
-// Função para calcular o total das despesas
-function calculateTotalExpensesValue() {
-    let total = 0;
-    for (let i = 0; i < expenseEntries.length; i++) {
-        total += expenseEntries[i][1]; 
-    }
-    return total;
+// Função para calcular o valor total das despesas
+for (const expense of expenseEntries) {
+    totalExpensesValue += expense[1];
 }
-
 // Função para calcular a despesas médias
 function calculateAverageExpense() {
     if (expenseEntries.length === 0) {
         return 0;
     }
-    let total = calculateTotalExpensesValue();
-    return total / expenseEntries.length;
+    const total = totalExpensesValue / expenseEntries.length;
+    return total;
 }
 
 // Função para calcular o saldo
 function calculateBalance() {
-    return budgetValue - calculateTotalExpensesValue();
+    const balanceValue = budgetValue - totalExpensesValue;
+    return balanceValue
 }
 
 // Função para atualizar a cor do saldo com base no valor de saldo
 function updateBalanceColor() {
-    totalExpensesValue = calculateTotalExpensesValue();
-if (budgetValue - totalExpensesValue < 0) {
-  balanceColor = "red";
-    console.log("Negative");
-} else if (budgetValue - totalExpensesValue < budgetValue * 0.25) {
-  balanceColor = "orange";
-  console.log("less than 25% of the budget");
-}   else {
-  balanceColor = "green";
-  console.log("Positive");
+    const balanceValue = calculateBalance();
+    if (balanceValue < 0) {
+        balanceColor = "red";
+    } else if (balanceValue < budgetValue / 4) {
+        balanceColor = "orange";
+    } else {
+        balanceColor = "green";
+    }
 }
-}
- // Função para calcular despesas por categoria
+// Função para calcular despesas por categoria
 function calculateCategoryExpenses(categoryName) {
     let categoryTotal = 0;
-    for (let i = 0; i < expenseEntries.length; i++) {
-        if (expenseEntries[i][0] === categoryName) {
-            categoryTotal += expenseEntries[i][1];
+    for (const expense of expenseEntries) {
+        if (expense[0] === categoryName) {
+            categoryTotal += expense[1];
         }
     }
     return categoryTotal;
@@ -64,35 +57,36 @@ function calculateCategoryExpenses(categoryName) {
 
 // Função para encontrar a categoria com maior despesa
 function calculateLargestCategory() {
-    const categories = {};
-    for (let i = 0; i < expenseEntries.length; i++) {
-        const category = expenseEntries[i][0];
-        const amount = expenseEntries[i][1];
-        if (!categories[category]) {
-            categories[category] = 0;
-        }
-        categories[category] += amount;
-    }   
-    let largestCategory = null;
-    let largestAmount = 0;
-    for (const category in categories) {
-        if (categories[category] > largestAmount) {
-            largestAmount = categories[category];
+    const uniqueCategories = [
+        "groceries",
+        "restaurants",
+        "transport",
+        "home",
+        "subscriptions"
+    ];
+    const categoryTotals = [];
+    for (const category of uniqueCategories) {
+        const total = calculateCategoryExpenses(category);
+        categoryTotals.push([category, total]);
+    }
+    let largestCategory = categoryTotals[0][0];
+    let largestTotal = categoryTotals[0][1];
+    for (const item of categoryTotals) {
+        const category = item[0];
+        const total = item[1];
+        if (total > largestTotal) {
+            largestTotal = total;
             largestCategory = category;
         }
     }
     return largestCategory;
 }
- 
+
+
 // Funções para atualizar os valores principais
-function addExpenseEntry(category, amount) {
-    expenseEntries.push([category, amount]);
-    totalExpensesValue = calculateTotalExpensesValue();
-    updateBalanceColor();
-}
-function setBudgetValue(amount) {
-    budgetValue = amount;
-    updateBalanceColor();
+function addExpenseEntry(values) {
+    totalExpensesValue += values[1];
+    expenseEntries.push(values);
 }
 
 
